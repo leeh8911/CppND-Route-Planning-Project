@@ -34,7 +34,7 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
     current_node->FindNeighbors();
     for (auto &neighbor : current_node->neighbors){
         neighbor->h_value = CalculateHValue(neighbor);
-        neighbor->g_value = current_node->h_value+1;
+        neighbor->g_value = current_node->g_value+1;
         open_list.emplace_back(neighbor);
     }
 }
@@ -48,7 +48,7 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 // - Return the pointer.
 
 RouteModel::Node *RoutePlanner::NextNode() {
-
+    std::sort(open_list.begin(), open_list.end(), [](auto &e1, auto &e2){return (e1->g_value + e1->h_value) < (e2->g_value + e2->h_value);});
 }
 
 
