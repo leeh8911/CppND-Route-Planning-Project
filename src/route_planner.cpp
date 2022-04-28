@@ -50,6 +50,7 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 // - Return the pointer.
 
 RouteModel::Node *RoutePlanner::NextNode() {
+    if (open_list.empty()) return nullptr;
     std::sort(open_list.begin(), open_list.end(), [](auto &e1, auto &e2){return (e1->g_value + e1->h_value) > (e2->g_value + e2->h_value);});
     RouteModel::Node* node = open_list.back();
     open_list.pop_back();
@@ -83,6 +84,8 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node 
             break;
         }
     }
+
+    std::reverse(path_found.begin(), path_found.end());
     
     distance *= m_Model.MetricScale(); // Multiply the distance by the scale of the map to get meters.
     return path_found;
@@ -101,13 +104,28 @@ void RoutePlanner::AStarSearch() {
     RouteModel::Node *current_node = nullptr;
 
     // TODO: Implement your solution here.
+    int counter = 0;
     current_node = start_node;
+    std::cout <<"Start Searching\n";
     while(current_node){
+        std::cout << "Counter : " << counter++ << "\n";
+        std::cout << "StartNode : (" << start_node << ")" << start_node->x << ", " << start_node->y <<"\n";
+        std::cout << "CurrentNode : (" << current_node << ")" << current_node->x << ", " << current_node->y <<"\n";
+        std::cout << "EndNode : (" << end_node << ")" << end_node->x << ", " << end_node->y <<"\n";
+        std::cout << "AddNeighbors Start\n";
         AddNeighbors(current_node);
+        std::cout << "AddNeighbors End\n";
 
+        std::cout << "NextNode Start\n";
         current_node = NextNode();
+        std::cout << "NextNode End\n";
         if (current_node == end_node){
+
+            std::cout << "ConstructFinalPath Start\n";
             this->m_Model.path = ConstructFinalPath(current_node);
+            std::cout << "ConstructFinalPath End\n";
+            break;
         }
     }
+    std::cout << "End Searching\n";
 }
